@@ -4,6 +4,7 @@ data Value = Bool Bool
     | Int Int
     | String String
     | Var String
+	| Break
     | Nil
 
 --
@@ -16,6 +17,7 @@ instance Show Value where
   show (Int int) = show int
   show (String str) = "\"" ++ str ++ "\""
   show (Var name) = name
+  show (Break) = "Break"
   show Nil = "undefined"
   
 -- This function could be replaced by (unwords.map show). The unwords
