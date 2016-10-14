@@ -106,3 +106,19 @@ x.tail(); //[2,3,1,1,x,"ola","mundo", true]
 // 	return a+2;
 // }
 // var z = soma2(5);
+
+
+
+
+
+// Funcao len
+/*
+function len(A){
+	if (A == []){
+		return 0;
+	}
+	else {
+		return 1 + len(A.tail())
+	}
+}
+*/
