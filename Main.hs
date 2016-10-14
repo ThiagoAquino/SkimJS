@@ -55,9 +55,19 @@ evalStmt env (VarDeclStmt []) = return Nil
 evalStmt env (VarDeclStmt (decl:ds)) =
     varDecl env decl >> evalStmt env (VarDeclStmt ds)
 evalStmt env (ExprStmt expr) = evalExpr env expr
+--
+-- BreakStmt--
+--
 evalStmt env (BreakStmt tipo) = return Break
+--
+-- ReturnStmt--
+--
 evalStmt env (ReturnStmt Nothing) = return Nil
 evalStmt env (ReturnStmt (Just expr)) = evalExpr env expr
+--
+-- ContinueStmt--
+--
+evalStmt env (ContinueStmt Nothing) = return Continue;
 
 --
 -----------------------BLOCO WHILE--------------------------------------------------
