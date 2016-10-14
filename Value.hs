@@ -1,11 +1,16 @@
 module Value (Value (..)) where
 
+import Language.ECMAScript3.Syntax
+
 data Value = Bool Bool
     | Int Int
     | String String
     | Var String
     | Nil
     | Break
+    | Error String
+    | Function Id [Id] [Statement]
+    | Return Value
     | List [Value]
 
 --
@@ -20,6 +25,7 @@ instance Show Value where
   show (Var name) = name
   show Nil = "undefined"
   show (Break) = "Break"
+  show (Function (Id name) argumentos corpo) = show argumentos
   show (List l) = show l
 
 -- This function could be replaced by (unwords.map show). The unwords

@@ -73,12 +73,22 @@ evalStmt env (DoWhileStmt dowhileBock expressao) = do
                                     else return Nil
 
 --
----------------------------------------------------------------------------------------
+--------------------------------BLOCO RETURN-------------------------------------------------------
 --
 
+evalStmt env (ReturnStmt expression) = do
+     case expression of
+        (Nothing) -> return Nil
+        (Just expr) -> do
+            exprEval <- evalExpr env expr
+            return exprEval
 
+--
+--------------------------------BLOCO FUNCAO-------------------------------------------------------
+--
 
-
+evalStmt env (FunctionStmt name args body) = do
+    funcDecl env (name, args, body)
 --
 ------------------------  Bloco IF ----------------------------------------------
 --
@@ -206,6 +216,13 @@ varDecl env (VarDecl (Id id) maybeExpr) = do
 
 setVar :: String -> Value -> StateTransformer Value
 setVar var val = ST $ \s -> (val, insert var val s)
+
+funcDecl :: StateT -> (Id, [Id], [Statement]) -> StateTransformer Value
+funcDecl env ((Id id), args, stmts) = do
+     setFunc id (Function (Id id) args stmts)
+
+setFunc :: String -> Value -> StateTransformer Value
+setFunc name desc = ST $ \s -> (desc, insert name desc s)
 
 --
 -- Types and boilerplate

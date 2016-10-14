@@ -39,6 +39,7 @@ for (; x < 15;) {
 
 //Programa 4 - Testando Do while e for
 
+/*
 var x = 0, y = 10;
 x + y;
 if (x == 1) {
@@ -53,7 +54,7 @@ do {
 		x = x+1
 	}
 } while (x < 30);
-
+*/
 
 
 //Programa 5 - Testando break
@@ -94,3 +95,11 @@ while (x < 15)  {
 
 //Programa 7 - Testando Listas
 var a = [1,2,3], b = [1,2,"ola", "mundo", true];
+
+
+//Programa 7 - Testando funcao
+
+function soma2(a) {
+	return a+2;
+}
+var z = soma2(5);
