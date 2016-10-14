@@ -45,7 +45,7 @@ evalStmt env (WhileStmt expressao whileBock) = do
                         case ehbreak of
                             Break -> return Nil                                 -- Se for, para a execução do programa
                             _ -> evalStmt env (WhileStmt expressao whileBock)   -- Se for qualqer outra coisa, executa e chama o bloco novamente
-                    else return Nil           
+                    else return Nil
 
 --
 ---------------------------------------------------------------------------------------
@@ -56,22 +56,32 @@ evalStmt env (WhileStmt expressao whileBock) = do
 --
 evalStmt env (DoWhileStmt dowhileBock expressao) = do
     ehbreak <- evalStmt env dowhileBock
-    case ehbreak of 
+    case ehbreak of
             Break -> return Nil
             _ -> do evalStmt env dowhileBock
                     val <- evalExpr env expressao                                               -- Avalia a expressão
                     case val of
                         (Bool b) -> if b then do
                                         evalStmt env (DoWhileStmt dowhileBock expressao)
-                                    else return Nil 
-            
+                                    else return Nil
+
 --
----------------------------------------------------------------------------------------
+--------------------------------BLOCO RETURN-------------------------------------------------------
 --
 
+evalStmt env (ReturnStmt expression) = do
+     case expression of
+        (Nothing) -> return Nil
+        (Just expr) -> do
+            exprEval <- evalExpr env expr
+            return exprEval
 
+--
+--------------------------------BLOCO FUNCAO-------------------------------------------------------
+--
 
-
+evalStmt env (FunctionStmt name args body) = do
+    funcDecl env (name, args, body)
 --
 ------------------------  Bloco IF ----------------------------------------------
 --
@@ -79,17 +89,17 @@ evalStmt env (DoWhileStmt dowhileBock expressao) = do
 -----------------BlockStmt (x:xs)--------------------------
 
 evalStmt env (BlockStmt (a:[])) = evalStmt env a
-evalStmt env (BlockStmt (a:as)) = 
+evalStmt env (BlockStmt (a:as)) =
     case a of
         (BreakStmt _) -> evalStmt env a
         (ReturnStmt _) -> evalStmt env a
         _ -> do evalStmt env a
-                evalStmt env (BlockStmt as) 
-            
----------------------BLOCO IF------------------------------ 
+                evalStmt env (BlockStmt as)
+
+---------------------BLOCO IF------------------------------
 evalStmt env (IfSingleStmt expr ifBlock) = do
     ret <- evalExpr env expr
-    case ret of 
+    case ret of
         Bool b -> if b == True then evalStmt env ifBlock else evalStmt env EmptyStmt
 
 --------------------BLOCO IF/ELSE------------------------
@@ -105,7 +115,7 @@ evalStmt env (IfStmt expr ifBlock elseBlock) = do
 --
 ---------------------------------------BLOCO FOR---------------------------------------
 --
-evalStmt env(ForStmt inicio expressao incremento forBlock) = do 
+evalStmt env(ForStmt inicio expressao incremento forBlock) = do
     evalInit env inicio
     case expressao of
         (Just a) -> do
@@ -118,17 +128,17 @@ evalStmt env(ForStmt inicio expressao incremento forBlock) = do
                             Break -> return Nil
                             _ -> do
                                 case incremento of
-                              
-                                    (Just expr) -> do 
-                                                evalExpr env expr 
+
+                                    (Just expr) -> do
+                                                evalExpr env expr
                                                 evalStmt env (ForStmt NoInit expressao incremento forBlock)
                                     (Nothing) -> evalStmt env (ForStmt NoInit expressao incremento forBlock)
 
-                    
+
                     else evalStmt env EmptyStmt
         (Nothing) -> do
             eval <- evalStmt env forBlock
-            case eval of  
+            case eval of
                 Break -> return Nil
                 _ -> do
                     case incremento of
@@ -142,7 +152,7 @@ evalStmt env(ForStmt inicio expressao incremento forBlock) = do
 evalInit env (NoInit) = return Nil
 evalInit env (VarInit a) = (evalStmt env (VarDeclStmt a))
 evalInit env (ExprInit b) = (evalExpr env b)
-    
+
 --
 ---------------------------------------------------------------------------------------
 --
@@ -199,6 +209,13 @@ varDecl env (VarDecl (Id id) maybeExpr) = do
 
 setVar :: String -> Value -> StateTransformer Value
 setVar var val = ST $ \s -> (val, insert var val s)
+
+funcDecl :: StateT -> (Id, [Id], [Statement]) -> StateTransformer Value
+funcDecl env ((Id id), args, stmts) = do
+     setFunc id (Function (Id id) args stmts)
+
+setFunc :: String -> Value -> StateTransformer Value
+setFunc name desc = ST $ \s -> (desc, insert name desc s)
 
 --
 -- Types and boilerplate

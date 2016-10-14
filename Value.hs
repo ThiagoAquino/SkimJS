@@ -1,17 +1,22 @@
 module Value (Value (..)) where
 
+import Language.ECMAScript3.Syntax
+
 data Value = Bool Bool
     | Int Int
     | String String
     | Var String
     | Nil
     | Break
+    | Error String
+    | Function Id [Id] [Statement]
+    | Return Value
 
 --
 -- Pretty Printer
 --
 
-instance Show Value where 
+instance Show Value where
   show (Bool True) = "true"
   show (Bool False) = "false"
   show (Int int) = show int
@@ -19,9 +24,10 @@ instance Show Value where
   show (Var name) = name
   show Nil = "undefined"
   show (Break) = "Break"
-  
+  show (Function (Id name) argumentos corpo) = show argumentos
+
 -- This function could be replaced by (unwords.map show). The unwords
--- function takes a list of String values and uses them to build a 
+-- function takes a list of String values and uses them to build a
 -- single String where the words are separated by spaces.
 showListContents :: [Value] -> String
 showListContents [] = ""
