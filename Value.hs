@@ -6,12 +6,13 @@ data Value = Bool Bool
     | Var String
     | Nil
     | Break
+    | List [Value]
 
 --
 -- Pretty Printer
 --
 
-instance Show Value where 
+instance Show Value where
   show (Bool True) = "true"
   show (Bool False) = "false"
   show (Int int) = show int
@@ -19,9 +20,10 @@ instance Show Value where
   show (Var name) = name
   show Nil = "undefined"
   show (Break) = "Break"
-  
+  show (List l) = show l
+
 -- This function could be replaced by (unwords.map show). The unwords
--- function takes a list of String values and uses them to build a 
+-- function takes a list of String values and uses them to build a
 -- single String where the words are separated by spaces.
 showListContents :: [Value] -> String
 showListContents [] = ""

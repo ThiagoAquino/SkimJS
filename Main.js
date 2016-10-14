@@ -16,7 +16,7 @@ if( x > y) {
 		break;
 		z = 50;
 	}
-	
+
 }
 
 */
@@ -88,6 +88,9 @@ while (x < 15)  {
 	for (; x < 20;) {
 		x = x+1
 	}
-} 
+}
 
 */
+
+//Programa 7 - Testando Listas
+var a = [1,2,3], b = [1,2,"ola", "mundo", true];
