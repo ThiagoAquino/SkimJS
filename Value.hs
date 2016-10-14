@@ -8,6 +8,7 @@ data Value = Bool Bool
     | Var String
     | Nil
     | Break
+    | Continue
     | Error String
     | Function Id [Id] [Statement]
     | Return Value
@@ -26,6 +27,7 @@ instance Show Value where
   show (Var name) = name
   show Nil = "undefined"
   show (Break) = "Break"
+  show (Continue) = ""
   show (Function (Id name) argumentos corpo) = show argumentos
   show (List l) = show l
 
