@@ -27,9 +27,27 @@ evalExpr env (AssignExpr OpAssign (LVar var) expr) = do
 -- eval Lists
 evalExpr env (ArrayLit []) = return (List [])
 evalExpr env (ArrayLit (a:as)) = do
-      head <- evalExpr env a
-      List tail <- evalExpr env (ArrayLit as)
-      return (List (head:tail))
+    head <- evalExpr env a
+    List tail <- evalExpr env (ArrayLit as)
+    return (List (head:tail))
+
+-- chamada de função(CallExpr que recebe um nome e parametro) do tipo "lista.head(); e imprime a cabeça de lista"
+evalExpr env (CallExpr expr args) = do
+    case expr of
+        (DotRef listName (Id "head")) -> do                         -- funcao head() que retorna a cabeça da lista avaliada evalList
+            (List evalList) <- evalExpr env listName
+            return (head(evalList))
+        (DotRef listName (Id "tail")) -> do                         -- uncao tail() que retorna a tail da lista avaliada evalList
+            (List evalList) <- evalExpr env listName
+            return (List (tail(evalList)))
+        (DotRef listName (Id "concat")) -> do                       -- funcao list.concat(x) que que concatena list++x
+            (List evalList) <- evalExpr env listName
+            argsList <- evalExpr env (head args)                    -- so pega o primeiro parametro ja que args pode ser uma lista de expression (so concatena uma lista por vez)
+            case argsList of
+                (List list) -> return (List (evalList ++ list))     -- args é uma lista
+                value -> return (List (evalList ++ [value]))        -- args é um valor x e nao uma lista
+        _ -> error "Falta Continuar outras funcoes (nao sei)"       -- outros casos em que nao sao funcoes reservadas de lista
+
 
 evalStmt :: StateT -> Statement -> StateTransformer Value
 evalStmt env EmptyStmt = return Nil
@@ -191,6 +209,8 @@ infixOp env OpEq   (Bool v1) (Bool v2) = return $ Bool $ v1 == v2
 infixOp env OpNEq  (Bool v1) (Bool v2) = return $ Bool $ v1 /= v2
 infixOp env OpLAnd (Bool v1) (Bool v2) = return $ Bool $ v1 && v2
 infixOp env OpLOr  (Bool v1) (Bool v2) = return $ Bool $ v1 || v2
+infixOp env OpEq   (List v1) (List v2) = return $ Bool $ v1 == v2
+infixOp env OpNEq  (List v1) (List v2) = return $ Bool $ v1 /= v2
 
 --
 -- Environment and auxiliary functions

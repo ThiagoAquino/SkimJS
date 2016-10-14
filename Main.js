@@ -94,12 +94,15 @@ while (x < 15)  {
 */
 
 //Programa 7 - Testando Listas
-var a = [1,2,3], b = [1,2,"ola", "mundo", true];
-
+var x = [1,2,3], y=[1,2,3], z = [1,x,"ola", "mundo", true];
+if (x==y) {
+	x = x.concat(y.head()).concat(z); // [1,2,3] ++ [1] + [1,x,"ola", "mundo", true]
+}
+x.tail(); //[2,3,1,1,x,"ola","mundo", true]
 
 //Programa 7 - Testando funcao
 
-function soma2(a) {
-	return a+2;
-}
-var z = soma2(5);
+// function soma2(a) {
+// 	return a+2;
+// }
+// var z = soma2(5);
