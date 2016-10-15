@@ -3,6 +3,14 @@ var x = 0, y = 10;
 x + y;
 */
 
+//Programa 0 - Testando If single
+/*
+var a = 2;
+if(a>1)
+{
+	a+10;
+}
+*/
 /*
 //Programa 1 - Testando if/else(Com e sem o break)
 var x = 5, y = 10, z;
@@ -94,21 +102,34 @@ while (x < 15)  {
 */
 
 //Programa 7 - Testando Listas
+/*
 var x = [1,2,3], y=[1,2,3], z = [1,x,"ola", "mundo", true];
 if (x==y) {
 	x = x.concat(y.head()).concat(z); // [1,2,3] ++ [1] + [1,x,"ola", "mundo", true]
 }
 x.tail(); //[2,3,1,1,x,"ola","mundo", true]
+*/
 
-//Programa 7 - Testando funcao
+//Programa 8 - Testando funcao
+/*
+function soma2(a) {
+	var abc = a+2;
+	return abc;
+}
+soma2(5);
+*/
 
-// function soma2(a) {
-// 	return a+2;
-// }
-// var z = soma2(5);
+//Programa 9 - Testando Listas
 
+var list1 = [1, 2, 3];
+var list2 = [2*2, 4 + 1, 3 + 3]; 
 
+var a = head(list1);
+var b = tail(list1);
+var c = tail(list2);
 
+var d = concat(b, c);
+d;
 
 
 // Funcao len
