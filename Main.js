@@ -120,9 +120,9 @@ soma2(5);
 */
 
 //Programa 9 - Testando Listas
-
+/*
 var list1 = [1, 2, 3];
-var list2 = [2*2, 4 + 1, 3 + 3]; 
+var list2 = [2*2, 4 + 1, 3 + 3];
 
 var a = head(list1);
 var b = tail(list1);
@@ -131,15 +131,17 @@ var c = tail(list2);
 var d = concat(b, c);
 d;
 
+*/
 
-// Funcao len
-/*
-function len(A){
-	if (A == []){
-		return 0;
+//Programa 10 - Testando fucao recursiva
+function fibonacci(num) {
+  if (num <= 1)
+	{
+		return 1;
 	}
 	else {
-		return 1 + len(A.tail())
+		return fibonacci(num - 1) + fibonacci(num - 2);
 	}
 }
-*/
+
+fibonacci(10);
