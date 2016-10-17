@@ -54,27 +54,27 @@ evalExpr env (CallExpr expr args) = do
                 (x:xs) -> do
                     (List list) <- evalExpr env x
                     (List fim) <- evalExpr env (CallExpr expr xs)
-                    return (List (list++fim))    
-        
+                    return (List (list++fim))
+
 ---------------------------------------------
 --
 -- Function--
 --
         (Function name argsName stmts) -> ST $ \s ->
             let (ST f) = mapM (evalExpr env) args
-                (ST t) = aux1 env (BlockStmt stmts)
-                (_, justLocal) = t s
-                (ST x) = aux justLocal (BlockStmt stmts)
-                (_, automaticGlob) = x s
+                (ST t) = auxiliar1 env (BlockStmt stmts)
+                (_, apenasLocal) = t s
+                (ST x) = auxiliar apenasLocal (BlockStmt stmts)
+                (_, autoGlobal) = x s
                 (params, _) = f s
-                parameters = fromList (zip (Prelude.map (\(Id a) -> a) argsName) (params))
-                local = union parameters s
+                parametros = fromList (zip (Prelude.map (\(Id a) -> a) argsName) (params))
+                local = union parametros s
                 (ST g) = evalStmt env (BlockStmt stmts)
-                (val, finalState) = g local
+                (val, estadoFinal) = g local
             in do
             case val of
-                (Return ret) -> (ret, union (intersection (difference finalState parameters) automaticGlob) (intersection automaticGlob finalState))
-                _ -> (val, union (intersection (difference finalState parameters) automaticGlob) (intersection automaticGlob finalState))
+                (Return ret) -> (ret, union (intersection (difference estadoFinal parametros) autoGlobal) (intersection autoGlobal estadoFinal))
+                _ -> (val, union (intersection (difference estadoFinal parametros) autoGlobal) (intersection autoGlobal estadoFinal))
 
 
 -- Lista Eduardo
@@ -93,72 +93,72 @@ evalExpr env (CallExpr expr args) = do
 -}
 --------------------------------------------------------------------
 
-aux :: StateT -> Statement -> StateTransformer Value
-aux env (BlockStmt []) = return Nil
-aux env (BlockStmt ((ExprStmt (AssignExpr OpAssign (LVar var) expr)):xs)) = do
+auxiliar :: StateT -> Statement -> StateTransformer Value
+auxiliar env (BlockStmt []) = return Nil
+auxiliar env (BlockStmt ((ExprStmt (AssignExpr OpAssign (LVar var) expr)):xs)) = do
     v <- stateLookup env var
     case v of
     -- Variable not defined :( we'll create it!
         (Error _) -> do
             evalStmt env (VarDeclStmt [(VarDecl (Id var) (Nothing))])
-            aux env (BlockStmt xs)
-        _ -> aux env (BlockStmt xs)
-aux env (BlockStmt (x:xs)) = do
+            auxiliar env (BlockStmt xs)
+        _ -> auxiliar env (BlockStmt xs)
+auxiliar env (BlockStmt (x:xs)) = do
     case x of
         (IfStmt expr ifBlock elseBlock) -> do
-            aux env ifBlock
-            aux env elseBlock
-            aux env (BlockStmt xs)
+            auxiliar env ifBlock
+            auxiliar env elseBlock
+            auxiliar env (BlockStmt xs)
         (IfSingleStmt expr ifBlock) -> do
-            aux env ifBlock
-            aux env (BlockStmt xs)
+            auxiliar env ifBlock
+            auxiliar env (BlockStmt xs)
         (ForStmt initialize expr1 expr2 stmt) -> do
             case initialize of
                 (ExprInit e) -> do
-                    aux env (BlockStmt [ExprStmt e])
-                    aux env stmt
-                    aux env (BlockStmt xs)
+                    auxiliar env (BlockStmt [ExprStmt e])
+                    auxiliar env stmt
+                    auxiliar env (BlockStmt xs)
                 _ -> do
-                    aux env stmt
-                    aux env (BlockStmt xs)
+                    auxiliar env stmt
+                    auxiliar env (BlockStmt xs)
         (ExprStmt (CallExpr nameExp args)) -> do
             res <- evalExpr env (nameExp)
             case res of
-                (Error _) -> aux env (BlockStmt xs)
+                (Error _) -> auxiliar env (BlockStmt xs)
                 (Function name argsName stmts) -> do
-                    aux env (BlockStmt stmts)
-                    aux env (BlockStmt xs)
-        _ -> aux env (BlockStmt xs)
+                    auxiliar env (BlockStmt stmts)
+                    auxiliar env (BlockStmt xs)
+        _ -> auxiliar env (BlockStmt xs)
 
-aux1 :: StateT -> Statement -> StateTransformer Value
-aux1 env (BlockStmt []) = return Nil
-aux1 env (VarDeclStmt []) = return Nil
-aux1 env (VarDeclStmt (decl:ds)) = do
+auxiliar1 :: StateT -> Statement -> StateTransformer Value
+auxiliar1 env (BlockStmt []) = return Nil
+auxiliar1 env (VarDeclStmt []) = return Nil
+auxiliar1 env (VarDeclStmt (decl:ds)) = do
     varDecl env decl
-    aux1 env (VarDeclStmt ds)
-aux1 env (BlockStmt (x:xs)) = do
+    auxiliar1 env (VarDeclStmt ds)
+auxiliar1 env (BlockStmt (x:xs)) = do
     case x of
         (IfStmt expr ifBlock elseBlock) -> do
-            aux1 env ifBlock
-            aux1 env elseBlock
-            aux1 env (BlockStmt xs)
+            auxiliar1 env ifBlock
+            auxiliar1 env elseBlock
+            auxiliar1 env (BlockStmt xs)
         (IfSingleStmt expr ifBlock) -> do
-            aux1 env ifBlock
-            aux1 env (BlockStmt xs)
+            auxiliar1 env ifBlock
+            auxiliar1 env (BlockStmt xs)
         (ForStmt initialize expr1 expr2 stmt) -> do
-            aux1 env stmt
-            aux1 env (BlockStmt xs)
+            auxiliar1 env stmt
+            auxiliar1 env (BlockStmt xs)
         (VarDeclStmt (y:ys)) -> do
             varDecl env y
-            aux1 env (BlockStmt xs)
+            auxiliar1 env (BlockStmt xs)
         (ExprStmt (CallExpr nameExp args)) -> do
             res <- evalExpr env (nameExp)
             case res of
-                (Error _) -> aux1 env (BlockStmt xs)
+                (Error _) -> auxiliar1 env (BlockStmt xs)
                 (Function name argsName stmts) -> do
-                    aux1 env (BlockStmt stmts)
-                    aux1 env (BlockStmt xs)
-        _ -> aux1 env (BlockStmt xs)
+                    auxiliar1 env (BlockStmt stmts)
+                    auxiliar1 env (BlockStmt xs)
+        _ -> auxiliar1 env (BlockStmt xs)
 
 listVarDecl :: [Id] -> [Expression] -> [VarDecl]
 listVarDecl (x:xs) (y:ys) = (VarDecl x (Just y)):(listVarDecl xs ys)

@@ -81,15 +81,15 @@ if (x == 20) {
 
 //Programa 6 - Testando Listas
 /*
-var list1 = [1, 2, 3];
-var list2 = [2*2, 4 + 1, 3 + 3];
+var lista1 = [1, 2, 3];
+var lista2 = [3*2, 4 + 2, 1 + 3];
 
-var a = head(list1);
-var b = tail(list1);
-var c = tail(list2);
+var a1 = head(lista1);
+var a2 = tail(lista1);
+var a3 = tail(lista2);
 
-var d = concat(b, c);
-d;
+var a4 = concat(a2, a3);
+a4;
 */
 
 //Programa 8 - Testando funcao
@@ -120,15 +120,14 @@ fibonacci(10);
 
 //Programa 10
 // Length function
-/*
+
 function len(A){
 	if (A == []){
 		return 0;
 	}
 	else {
-		return 1 + len(A.tail())
+		return 1 + len(tail(A))
 	}
 }
 
 len([1,2,3,4,5,6,7,8,9,0]);
-*/
