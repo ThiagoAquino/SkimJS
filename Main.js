@@ -129,5 +129,54 @@ function len(A){
 		return 1 + len(tail(A))
 	}
 }
+var l = [1,2,3,4,5,6,7,8,9,0];
+len(l);
+var x = l[2];
 
-len([1,2,3,4,5,6,7,8,9,0]);
+// MergeSort
+/*
+function mergeSort(list) {
+	var length = len(list);
+	var mid = length/2;
+	var left = [];
+	var right = [];
+	for (var i=0; i<mid; i=i+1) {
+		left[i] = list[i]
+	}
+	for (var j=mid; j<length; j=j+1) {
+		right[j] = list[j]
+	}
+
+	if (length<=1) {
+		return list;
+	}
+
+	mergeSort(left);
+	mergeSort(right);
+	merge(left, right, list);
+	return list;
+}
+
+function merge(left,right, result) {
+	var il = 0, ir = 0, im = 0;
+
+	while (il < len(left) && ir < len(right)) {
+		if (len(left)>0 && len(right)>0) {
+			if (left[il] /= right[ir]) {
+				result[im] = left[il];
+				il = il+1;
+			} else {
+				result[im] = right[ir];
+				ir = ir+1;
+			}
+			im = im+1;
+		}
+	}
+	concat(result, left);
+	concat(result, right);
+	return result;
+}
+
+var list = [2,10,3];
+list = mergeSort(list);
+*/

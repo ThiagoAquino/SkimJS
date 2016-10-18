@@ -14,7 +14,7 @@ data Value = Bool Bool
     | Return Value
     | List [Value]
 
-    deriving (Eq)
+    deriving (Eq, Ord)
 --
 -- Pretty Printer
 --

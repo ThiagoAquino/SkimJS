@@ -31,6 +31,14 @@ evalExpr env (ArrayLit (a:as)) = do
     List tail <- evalExpr env (ArrayLit as)
     return (List (head:tail))
 
+--
+evalExpr env (BracketRef expr i) = do
+    list <- evalExpr env expr
+    case list of
+        (List l) -> do
+            index <- evalExpr env i
+            getFromIndex env list index
+
 -- chamada de função(CallExpr que recebe um nome e parametro) do tipo "lista.head(); e imprime a cabeça de lista" (também usado para demais funcoes)
 evalExpr env (CallExpr expr args) = do
     res <- evalExpr env (expr)
@@ -287,6 +295,11 @@ evalInit env (NoInit) = return Nil
 evalInit env (VarInit a) = (evalStmt env (VarDeclStmt a))
 evalInit env (ExprInit b) = (evalExpr env b)
 
+
+-- x = lista[i]
+getFromIndex env (List []) (Int i) = error ("Null Point Exception KKKK")
+getFromIndex env (List (x:xs)) (Int i) | i == 0 = return x
+                                       | otherwise = getFromIndex (env) (List xs) (Int (i-1))
 --
 ---------------------------------------------------------------------------------------
 --
